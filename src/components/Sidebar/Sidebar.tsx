@@ -9,8 +9,8 @@ interface SidebarProps {
   tasks: Task[];
   onAddTask: () => void;
   onStatusChange: (id: string, status: Task['status']) => void;
-  currentView: 'app' | 'competitors' | 'gpa-rescue';
-  onViewChange: (view: 'app' | 'competitors' | 'gpa-rescue') => void;
+  currentView: 'app' | 'competitors';
+  onViewChange: (view: 'app' | 'competitors') => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -83,13 +83,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <span className="material-symbols-outlined">analytics</span>
             <span>📊 競合分析 ＆ プレゼン</span>
-          </button>
-          <button
-            className={`sidebar__action-btn ${currentView === 'gpa-rescue' ? 'sidebar__action-btn--active' : ''}`}
-            onClick={() => { onViewChange('gpa-rescue'); onClose(); }}
-          >
-            <span className="material-symbols-outlined">health_and_safety</span>
-            <span>🛡️ 単位死守 ＆ メンタル診断</span>
           </button>
         </div>
 

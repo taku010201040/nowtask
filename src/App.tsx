@@ -30,7 +30,7 @@ const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const [currentView, setCurrentView] = useState<'app' | 'competitors' | 'gpa-rescue'>('app');
+  const [currentView, setCurrentView] = useState<'app' | 'competitors'>('app');
 
   // Derived
   const todayTasks = getTodayTasks(tasks);
@@ -84,7 +84,6 @@ const App: React.FC = () => {
     };
     setTasks((prev) => storeAddTask(prev, fullTask));
     addToast('AI推奨課題をスケジュールに追加しました！', 'success');
-    setCurrentView('app');
   };
 
   return (
@@ -151,6 +150,11 @@ const App: React.FC = () => {
               />
             </section>
 
+            {/* GPA Rescue & Mental Care AI integrated inline */}
+            <section className="app__rescue-section">
+              <MentalGpaRescue onApplyTask={handleApplyGpaTask} />
+            </section>
+
             {/* FAB: Add task */}
             <button
               className="app__fab"
@@ -161,10 +165,8 @@ const App: React.FC = () => {
               <span className="material-symbols-outlined fill" style={{ fontSize: '28px' }}>add</span>
             </button>
           </>
-        ) : currentView === 'competitors' ? (
-          <CompetitiveAnalysis onViewChange={() => setCurrentView('app')} />
         ) : (
-          <MentalGpaRescue onViewChange={() => setCurrentView('app')} onApplyTask={handleApplyGpaTask} />
+          <CompetitiveAnalysis onViewChange={() => setCurrentView('app')} />
         )}
       </main>
 

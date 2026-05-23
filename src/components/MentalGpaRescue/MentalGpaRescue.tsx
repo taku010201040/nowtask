@@ -22,7 +22,6 @@ interface DiagnosisResult {
 }
 
 interface MentalGpaRescueProps {
-  onViewChange: () => void;
   onApplyTask: (task: Omit<Task, 'id' | 'date'>) => void;
 }
 
@@ -61,7 +60,7 @@ const PRESET_SYLLABUS_TASKS: SyllabusTask[] = [
   }
 ];
 
-const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApplyTask }) => {
+const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onApplyTask }) => {
   // States
   const [mentalStatus, setMentalStatus] = useState<'良い' | '普通' | 'しんどい' | null>(null);
   const [syllabusTasks, setSyllabusTasks] = useState<SyllabusTask[]>(PRESET_SYLLABUS_TASKS);
@@ -113,18 +112,18 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
 
     if (status === 'しんどい') {
       // 1. 【しんどい】の場合：
-      // 締切が「当日（0または1日）」かつ「出さないと落単（isCritical）」の超絶クリティカルなタスクがない限り「なし」
+      // 締切が「当日」または「翌日」かつ「出さないと落単」の超絶クリティカルなタスクがない限り「なし」
       const criticalTask = syllabusTasks.find(
-        (t) => t.daysRemaining <= 1 && t.isCritical
+        (t) => t.daysRemaining <= 2 && t.isCritical
       );
 
       if (criticalTask) {
         resultTask = criticalTask;
-        reason = `締切があと${criticalTask.daysRemaining}日と迫っており、かつ「落単（不合格）」に直結する極めて危険な状態にあるため、今日これだけは倒す必要があります。`;
-        ux_message = `今日は心も体も本当にしんどい中、診断を開いてくれて本当にえらいです。本当は泥のように眠ってほしいのですが、この『${criticalTask.courseName}』だけは提出を逃すと本当に単位を落としてしまいます…。今日だけは、この課題を「30分だけ」形にするのを目標にしましょう。完璧じゃなくていい、白紙提出を避けるだけでFがCになります！これが終わったら、あとはPCを閉じて、温かいお茶でも飲んでゆっくり眠ってくださいね。AIの先輩が全力で応援しています！🛌`;
+        reason = `締切があと${criticalTask.daysRemaining}日と迫っており、かつ不合格直結（落単危険）の超絶クリティカル状態です。今日これだけは倒す必要があります。`;
+        ux_message = `今日はお布団から出るのもきつい状態ですね。診断を開いてくれて本当にえらいです。本当は泥のように眠ってほしいのですが、この『${criticalTask.courseName}』だけは提出を逃すと本当に単位を落としてしまいます…。今日だけは、この課題を「30分だけ」形にするのを目標にしましょう。白紙提出を避けるだけでCは確保できます！これが終わったら、あとはPCを閉じてゆっくり眠りましょう！🛀`;
       } else {
-        reason = '直近2日以内に締切となる「不合格直結」の超危険な課題はありません。単位を守るためにも、今日は心身の回復を最優先にすべきです。';
-        ux_message = `今日はお布団から出るのも億劫なほど、本当にしんどい日なんですね。そんな中、真面目に単位のことを心配しているあなた自身を、まず抱きしめてあげてください。幸い、シラバスを逆算した結果、今日提出しないと即留年に直結するような狂気的な課題はありません！ですから、今日のタスクは「完全になし」です！焦って無理をしても効率は上がりません。今日は罪悪感を1グラムも持たずに、好きな動画を見たり、美味しいものを食べたりして、心を充電する一日にしてください。単位よりあなたのメンタルの方が100倍大切です！🛀`;
+        reason = '直近に落単に直結するような超危険な課題はありません。単位を守るためにも、今日は心身の回復を最優先にすべきです。';
+        ux_message = `今日は心身ともに限界ですね。シラバスを逆算した結果、今日提出しないと即留年に直結するような狂気的課題はありません！今日のタスクは「完全になし」です！焦って無理をしても効率は上がりません。今日は罪悪感を1グラムも持たずに、好きな動画を見たりして心を充電してください。単位よりあなたのメンタルの方が100倍大切です！🛌`;
       }
     } else if (status === '普通') {
       // 2. 【普通】の場合：
@@ -140,24 +139,23 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
       if (normalTask) {
         resultTask = normalTask;
         reason = `締切があと${normalTask.daysRemaining}日に迫っています。メンタルが「普通」の今、この直近課題を1件だけクリアしておくことで、明日以降の自分に多大な安心感を与えることができます。`;
-        ux_message = `今日は可もなく不可もない、平均的なコンディションですね。そういう日こそ、焦らず「直近で一番やばい課題」を1件だけ狙い撃ちして終わらせるのが最適解です！ターゲットは『${normalTask.courseName}』の課題。これさえ今日のうちに片付けておけば、明日以降の心の余裕が別次元になります。深く考えず、お気に入りの音楽でも流しながら、サクッと1件だけ倒しちゃいましょう。終わったら自分へのご褒美（お菓子やゲーム）を忘れずに！🍀`;
+        ux_message = `今日は可もなく不可もない、平均的なコンディションですね。そういう日こそ、焦らず「直近で一番やばい課題」を1件だけ狙い撃ちして終わらせるのが最適解です！ターゲットは『${normalTask.courseName}』。今日のうちに片付けておけば、明日以降の心の余裕が別次元になります。深く考えず、サクッと1件だけ倒しちゃいましょう！🍀`;
       } else {
         // 直近にやばいタスクがなければ、一番近いタスク
         const closestTask = [...syllabusTasks].sort((a, b) => a.daysRemaining - b.daysRemaining)[0];
         if (closestTask) {
           resultTask = closestTask;
           reason = `現在、2〜3日以内の超緊急タスクはありませんが、少し先にあるこの『${closestTask.courseName}』を今日少しだけ進めておくと、のちの負荷が大幅に分散されます。`;
-          ux_message = `直近の締め切りに追われるピンチな課題は、今すべてクリアされています！素晴らしい管理能力ですね。コンディションも普通とのことですので、少し先にある『${closestTask.courseName}』に軽く手を付けておくのはいかがでしょうか？今日30%だけでも進めておくと、締め切り前日に深夜テンションで泣きながら徹夜するのを防げます。未来の自分への貯金だと思って、マイペースに進めてみましょう！😊`;
+          ux_message = `直近の締め切りに追われるピンチな課題は、今すべてクリアされています！素晴らしい管理能力ですね。少し先にある『${closestTask.courseName}』に軽く手を付けておくのはいかがでしょうか？今日30%だけでも進めておくと、締め切り前日の泣きながらの徹夜を防げます。未来の自分への貯金だと思って進めてみましょう！😊`;
         } else {
           reason = '現在、提出すべき課題が完全に登録されていません。';
-          ux_message = `現在、課題リストが空っぽです！これは素晴らしい状態、あるいは素晴らしい逃避ですね（笑）。今日は普段通りに過ごして、心穏やかにのんびりした一日を楽しみましょう！`;
+          ux_message = `現在、課題リストが空っぽです！これは素晴らしい状態です。今日は普段通りに過ごして、心穏やかにのんびりした一日を楽しみましょう！`;
         }
       }
     } else {
       // 3. 【良い】の場合：
       // 重要度が高く、または少し先にあるが今日やるとアドバンテージになるものを提案
       const goodTask = [...syllabusTasks].sort((a, b) => {
-        // daysRemaining が適度に短いもので、criticalなものを優先
         const aScore = (a.isCritical ? 10 : 0) + (10 - a.daysRemaining);
         const bScore = (b.isCritical ? 10 : 0) + (10 - b.daysRemaining);
         return bScore - aScore;
@@ -166,10 +164,10 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
       if (goodTask) {
         resultTask = goodTask;
         reason = `心の余裕がたっぷりある今日のあなたなら、締切が少し先の課題であっても完全に圧倒することなく先回りして処理できます。今日終わらせることで圧倒的アドバンテージを獲得できます。`;
-        ux_message = `今日のコンディションは最高ですね！素晴らしいです！このエネルギーがみなぎっている無敵のタイミングで、直近または少し先にある『${goodTask.courseName}』の課題を先回りして一気に撃破してしまいましょう！心の余裕が良い状態の今なら、面倒なプログラミングやレポート執筆も驚くほどのスピードで終わるはずです。今日これを倒しておけば、来週のあなたが「過去の自分、マジで神！」と泣いて感謝することになります。圧倒的なアドバンテージを掴みにいきましょう！🚀`;
+        ux_message = `今日のコンディションは最高ですね！エネルギーがみなぎっている無敵のタイミングで、少し先にある『${goodTask.courseName}』を一気に撃破してしまいましょう！心の余裕が良い状態の今なら、面倒なレポートも驚くほどのスピードで終わるはずです。来週のあなたが「過去の自分、マジで神！」と泣いて感謝することになります！🚀`;
       } else {
         reason = '課題リストが完全に空です。';
-        ux_message = `なんと、提出が必要な課題が現在ゼロです！文句なしの完全勝利！今日は心の状態も抜群に良いので、課題のことは1秒も考えず、あなたの好きなクリエイティブな活動、友達との約束、あるいは趣味に全力で情熱とパワーを注ぎ込みましょう！素晴らしい一日を！🎉`;
+        ux_message = `なんと、提出が必要な課題が現在ゼロです！文句なしの完全勝利！今日は心の状態も抜群に良いので、課題のことは1秒も考えず、あなたの好きなクリエイティブな活動、趣味に全力で情熱とパワーを注ぎ込みましょう！🎉`;
       }
     }
 
@@ -189,9 +187,6 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
   const handleApplyToSchedule = () => {
     if (!diagnosis || !diagnosis.today_task.has_task) return;
 
-    // We extract the task title and map it to a logical time block today
-    // Let's set it to run from 16:00 to 18:00 (2 hours) for general spacing,
-    // or customize it slightly.
     const title = diagnosis.today_task.title;
     
     onApplyTask({
@@ -211,17 +206,14 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
       {/* Upper header */}
       <div className="rescue-hub__header">
         <div>
-          <h2 className="text-headline-lg font-bold" style={{ color: 'var(--color-primary)' }}>
-            🛡️ 単位死守 ＆ メンタル診断 AI
+          <h2 className="text-headline-lg font-bold" style={{ color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span>🛡️ 単位死守 ＆ メンタル診断 AI</span>
+            <span className="demo-badge">HACKATHON DEMO</span>
           </h2>
           <p className="text-body-md text-on-surface-variant">
             「シラバス逆算の締切危険度」×「あなたの今日の心の余裕」から、今日やるべきこと最大1件を厳選します。
           </p>
         </div>
-        <button className="rescue-hub__back-btn" onClick={onViewChange}>
-          <span className="material-symbols-outlined">schedule</span>
-          <span>スケジューラーに戻る</span>
-        </button>
       </div>
 
       <div className="rescue-grid">
@@ -230,19 +222,19 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
           {/* Section 1: Condition Select */}
           <div className="rescue-card">
             <span className="text-label-lg font-bold text-primary mb-2 display-block">
-              1. 今日の心の余裕を選択
+              1. 今日の心の余裕を選択 (デモでタップ！)
             </span>
             <p className="text-label-sm text-on-surface-variant mb-3">
-              あなたの今の正直なメンタル状態に一番近いものをタップしてください。
+              心の余裕度をクリックすると、タスクの優先度が一瞬で切り替わるアニメーションが走ります。
             </p>
             <div className="status-selector">
               <button 
-                className={`status-card status-card--tired ${mentalStatus === 'しんどい' ? 'status-card--active' : ''}`}
-                onClick={() => runDiagnosis('しんどい')}
+                className={`status-card status-card--good ${mentalStatus === '良い' ? 'status-card--active' : ''}`}
+                onClick={() => runDiagnosis('良い')}
               >
-                <span className="status-card__emoji">😫</span>
-                <span className="status-card__title">しんどい</span>
-                <span className="status-card__desc">頭も体も重い。何もしたくない。</span>
+                <span className="status-card__emoji">😊</span>
+                <span className="status-card__title">ゆとりがある</span>
+                <span className="status-card__desc">やる気全開！何でもこなせる状態。</span>
               </button>
 
               <button 
@@ -250,17 +242,17 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
                 onClick={() => runDiagnosis('普通')}
               >
                 <span className="status-card__emoji">😐</span>
-                <span className="status-card__title">普通</span>
-                <span className="status-card__desc">可もなく不可もない。平常運転。</span>
+                <span className="status-card__title">ちょっと疲れた</span>
+                <span className="status-card__desc">普通の状態。無難にこなしたい。</span>
               </button>
 
               <button 
-                className={`status-card status-card--good ${mentalStatus === '良い' ? 'status-card--active' : ''}`}
-                onClick={() => runDiagnosis('良い')}
+                className={`status-card status-card--tired ${mentalStatus === 'しんどい' ? 'status-card--active' : ''}`}
+                onClick={() => runDiagnosis('しんどい')}
               >
-                <span className="status-card__emoji">😊</span>
-                <span className="status-card__title">良い</span>
-                <span className="status-card__desc">集中できそう！ガツガツ進めたい。</span>
+                <span className="status-card__emoji">😫</span>
+                <span className="status-card__title">限界・ない</span>
+                <span className="status-card__desc">頭も体も限界。何もしたくない状態。</span>
               </button>
             </div>
           </div>
@@ -269,7 +261,7 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
           <div className="rescue-card mt-4">
             <div className="rescue-card__header-row">
               <span className="text-label-lg font-bold text-primary">
-                2. 控えているシラバス課題リスト
+                2. 控えているシラバス課題リスト (優先度自動シフト)
               </span>
               <button 
                 className="add-task-toggle-btn"
@@ -280,7 +272,7 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
               </button>
             </div>
             <p className="text-label-sm text-on-surface-variant mb-3">
-              大学のシラバスから逆算された、これから提出が必要な重要タスクです。
+              大学のシラバスから逆算された重要タスクです。心の余裕に合わせて見え方が切り替わります。
             </p>
 
             {/* Task Add Form */}
@@ -350,46 +342,75 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
               </form>
             )}
 
-            {/* List rendered */}
-            <div className="syllabus-list">
+            {/* List rendered with visual priorities switching animation classes */}
+            <div className={`syllabus-list syllabus-list--active-${mentalStatus || 'none'}`}>
               {syllabusTasks.length === 0 ? (
                 <p className="syllabus-list__empty text-body-md text-on-surface-variant">
                   登録されているシラバス課題はありません。
                 </p>
               ) : (
-                syllabusTasks.map((task) => (
-                  <div 
-                    key={task.id} 
-                    className={`syllabus-item ${task.isCritical ? 'syllabus-item--critical' : ''}`}
-                  >
-                    <div className="syllabus-item__main">
-                      <div className="syllabus-item__badge-row">
-                        <span className="syllabus-item__badge-course">{task.courseName}</span>
-                        <span className={`syllabus-item__badge-days ${task.daysRemaining <= 2 ? 'urgent' : ''}`}>
-                          締切まであと {task.daysRemaining} 日
-                        </span>
-                        {task.isCritical && (
-                          <span className="syllabus-item__badge-danger">
-                            落単危険度: 極高
-                          </span>
-                        )}
-                      </div>
-                      <h4 className="syllabus-item__name text-body-lg font-bold mt-1">
-                        {task.taskName}
-                      </h4>
-                      <p className="syllabus-item__desc text-label-sm text-on-surface-variant mt-1">
-                        📢 {task.dangerLevel}
-                      </p>
-                    </div>
-                    <button 
-                      className="syllabus-item__delete-btn"
-                      onClick={() => handleDeleteTask(task.id)}
-                      aria-label="課題を削除"
+                syllabusTasks.map((task) => {
+                  // Compute dynamic animation priorities
+                  let priorityClass = '';
+                  
+                  if (mentalStatus === 'しんどい') {
+                    // Check if it is the recommended critical rescue task
+                    const isCriticalRescue = task.daysRemaining <= 2 && task.isCritical;
+                    if (isCriticalRescue) {
+                      priorityClass = 'syllabus-item--glowing-rescue';
+                    } else {
+                      priorityClass = 'syllabus-item--dormant-tired';
+                    }
+                  } else if (mentalStatus === '普通') {
+                    // Find the single recommended normal task
+                    const isRecommendedNormal = diagnosis && diagnosis.today_task.has_task && 
+                      diagnosis.today_task.title.includes(task.courseName) && 
+                      diagnosis.today_task.title.includes(task.taskName);
+                    
+                    if (isRecommendedNormal) {
+                      priorityClass = 'syllabus-item--focused';
+                    } else {
+                      priorityClass = 'syllabus-item--faded';
+                    }
+                  } else if (mentalStatus === '良い') {
+                    // All active
+                    priorityClass = 'syllabus-item--active-good';
+                  }
+
+                  return (
+                    <div 
+                      key={task.id} 
+                      className={`syllabus-item ${task.isCritical ? 'syllabus-item--critical' : ''} ${priorityClass}`}
                     >
-                      <span className="material-symbols-outlined">delete</span>
-                    </button>
-                  </div>
-                ))
+                      <div className="syllabus-item__main">
+                        <div className="syllabus-item__badge-row">
+                          <span className="syllabus-item__badge-course">{task.courseName}</span>
+                          <span className={`syllabus-item__badge-days ${task.daysRemaining <= 2 ? 'urgent' : ''}`}>
+                            締切まであと {task.daysRemaining} 日
+                          </span>
+                          {task.isCritical && (
+                            <span className="syllabus-item__badge-danger">
+                              落単危険度: 極高
+                            </span>
+                          )}
+                        </div>
+                        <h4 className="syllabus-item__name text-body-lg font-bold mt-1">
+                          {task.taskName}
+                        </h4>
+                        <p className="syllabus-item__desc text-label-sm text-on-surface-variant mt-1">
+                          📢 {task.dangerLevel}
+                        </p>
+                      </div>
+                      <button 
+                        className="syllabus-item__delete-btn"
+                        onClick={() => handleDeleteTask(task.id)}
+                        aria-label="課題を削除"
+                      >
+                        <span className="material-symbols-outlined">delete</span>
+                      </button>
+                    </div>
+                  );
+                })
               )}
             </div>
           </div>
@@ -400,7 +421,7 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
           {diagnosis ? (
             <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)', height: '100%' }}>
               {/* Output Result Box */}
-              <div className={`diagnosis-result-card ${!diagnosis.today_task.has_task ? 'diagnosis-result-card--rest' : ''}`}>
+              <div className={`diagnosis-result-card ${!diagnosis.today_task.has_task ? 'diagnosis-result-card--rest animate-pulse-glow-green' : 'animate-pulse-glow-primary'}`}>
                 <div className="diagnosis-result-card__header">
                   <span className="material-symbols-outlined text-primary" style={{ fontSize: '28px' }}>
                     {diagnosis.today_task.has_task ? 'auto_awesome' : 'spa'}
@@ -415,7 +436,7 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
                     <div>
                       <div className="recommended-task-box">
                         <span className="text-label-sm text-on-surface-variant font-bold">🎯 今日の必達1件</span>
-                        <h3 className="text-headline-md font-bold text-primary mt-1" style={{ textShadow: '0 0 10px rgba(255, 215, 169, 0.2)' }}>
+                        <h3 className="text-headline-md font-bold text-primary mt-1" style={{ textShadow: '0 0 12px rgba(255, 215, 169, 0.4)' }}>
                           {diagnosis.today_task.title}
                         </h3>
                       </div>
@@ -449,7 +470,7 @@ const MentalGpaRescue: React.FC<MentalGpaRescueProps> = ({ onViewChange, onApply
               </div>
 
               {/* Empathetic UX Message card */}
-              <div className="empathy-card">
+              <div className="empathy-card animate-slide-up">
                 <div className="empathy-card__header">
                   <span className="material-symbols-outlined text-secondary" style={{ fontSize: '24px' }}>sentiment_satisfied</span>
                   <span className="text-label-lg font-bold text-secondary">

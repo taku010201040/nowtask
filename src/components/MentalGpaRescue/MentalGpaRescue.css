@@ -17,30 +17,22 @@
   padding: 0 var(--spacing-sm);
 }
 
-.rescue-hub__back-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: var(--color-surface-container-high);
-  border: 1px solid var(--color-outline-variant);
+/* Hackathon demo badge */
+.demo-badge {
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #F59E0B, #EF4444);
+  color: #ffffff;
+  padding: 2px 8px;
   border-radius: 9999px;
-  color: var(--color-primary);
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-normal);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+  animation: badge-shine 2s infinite ease-in-out;
 }
 
-.rescue-hub__back-btn:hover {
-  background: var(--color-surface-bright);
-  border-color: var(--color-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 185, 90, 0.15);
-}
-
-.rescue-hub__back-btn:active {
-  transform: translateY(0);
+@keyframes badge-shine {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 
 /* Grid layout */
@@ -167,6 +159,8 @@
   flex-direction: column;
   gap: var(--spacing-sm);
   margin-top: var(--spacing-sm);
+  position: relative;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .syllabus-list__empty {
@@ -186,7 +180,18 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--spacing-md);
-  transition: all var(--transition-normal);
+  
+  /* Dynamic transitions for priority shifts */
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.4s ease,
+              box-shadow 0.4s ease;
+  max-height: 160px; /* Normal upper limit */
+  opacity: 1;
+  transform: scale(1);
 }
 
 .syllabus-item:hover {
@@ -199,9 +204,61 @@
   background: linear-gradient(135deg, var(--color-surface-container-lowest) 0%, rgba(239, 68, 68, 0.02) 100%);
 }
 
-.syllabus-item--critical:hover {
-  border-color: #EF4444;
+/* ==========================================================================
+   DYNAMIC PRIORITY SWITCHING ANIMATIONS (HACKATHON DEMO)
+   ========================================================================== */
+
+/* 1. "ゆとりがある (良い)" Mode: Bright and Active */
+.syllabus-item--active-good {
+  opacity: 1;
+  transform: scale(1);
+  filter: none;
 }
+
+/* 2. "ちょっと疲れた (普通)" Mode: Focus on 1 task, others faded */
+.syllabus-item--focused {
+  border-color: var(--color-secondary) !important;
+  box-shadow: 0 6px 20px rgba(164, 201, 255, 0.15);
+  transform: scale(1.02);
+  z-index: 2;
+  opacity: 1;
+}
+
+.syllabus-item--faded {
+  opacity: 0.35;
+  transform: scale(0.97);
+  filter: grayscale(0.5);
+}
+
+/* 3. "限界・ない (しんどい)" Mode: Pulsing rescue glow, others completely collapse */
+.syllabus-item--glowing-rescue {
+  border-color: #EF4444 !important;
+  background: linear-gradient(135deg, #15080a 0%, rgba(239, 68, 68, 0.07) 100%) !important;
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+  transform: scale(1.04);
+  z-index: 3;
+  animation: pulse-glow-critical 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-glow-critical {
+  0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.6); }
+}
+
+.syllabus-item--dormant-tired {
+  opacity: 0 !important;
+  max-height: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  border-color: transparent !important;
+  pointer-events: none;
+  overflow: hidden;
+  transform: scale(0.8) translateY(-20px);
+}
+
+/* ========================================================================== */
 
 .syllabus-item__main {
   flex: 1;
@@ -401,6 +458,7 @@
   box-shadow: 0 8px 32px rgba(255, 215, 169, 0.08);
   position: relative;
   overflow: hidden;
+  transition: all 0.5s ease;
 }
 
 .diagnosis-result-card::after {
@@ -468,6 +526,25 @@
   transform: translateY(0);
 }
 
+/* Pulsing glows for diagnostic computing theme */
+.animate-pulse-glow-primary {
+  animation: diagnosis-glow-primary 3s infinite ease-in-out;
+}
+
+.animate-pulse-glow-green {
+  animation: diagnosis-glow-green 3s infinite ease-in-out;
+}
+
+@keyframes diagnosis-glow-primary {
+  0%, 100% { box-shadow: 0 8px 32px rgba(255, 215, 169, 0.08); }
+  50% { box-shadow: 0 8px 32px rgba(255, 215, 169, 0.2); }
+}
+
+@keyframes diagnosis-glow-green {
+  0%, 100% { box-shadow: 0 8px 32px rgba(34, 197, 94, 0.05); }
+  50% { box-shadow: 0 8px 32px rgba(34, 197, 94, 0.15); }
+}
+
 /* Empathy Card */
 .empathy-card {
   background: var(--color-surface-container-low);
@@ -509,7 +586,7 @@
 .json-output-card__code {
   margin: 0;
   font-size: 11px;
-  color: #38bdf8; /* Nice tailwind light blue code color */
+  color: #38bdf8;
   max-height: 200px;
   overflow-y: auto;
   white-space: pre-wrap;
