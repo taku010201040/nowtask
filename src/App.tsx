@@ -10,6 +10,7 @@ import TaskList from './components/TaskList/TaskList';
 import AddTaskSheet from './components/AddTaskSheet/AddTaskSheet';
 import Toast, { type ToastMessage } from './components/Toast/Toast';
 import CompetitiveAnalysis from './components/CompetitiveAnalysis/CompetitiveAnalysis';
+import MentalGpaRescue from './components/MentalGpaRescue/MentalGpaRescue';
 
 import type { Task } from './types';
 import {
@@ -29,7 +30,7 @@ const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
-  const [currentView, setCurrentView] = useState<'app' | 'competitors'>('app');
+  const [currentView, setCurrentView] = useState<'app' | 'competitors' | 'gpa-rescue'>('app');
 
   // Derived
   const todayTasks = getTodayTasks(tasks);
@@ -73,6 +74,17 @@ const App: React.FC = () => {
   const handleDelete = (id: string) => {
     setTasks((prev) => storeDeleteTask(prev, id));
     addToast('タスクを削除しました', 'info');
+  };
+
+  const handleApplyGpaTask = (task: Omit<Task, 'id' | 'date'>) => {
+    const fullTask: Task = {
+      ...task,
+      id: generateId(),
+      date: todayStr(),
+    };
+    setTasks((prev) => storeAddTask(prev, fullTask));
+    addToast('AI推奨課題をスケジュールに追加しました！', 'success');
+    setCurrentView('app');
   };
 
   return (
@@ -149,8 +161,10 @@ const App: React.FC = () => {
               <span className="material-symbols-outlined fill" style={{ fontSize: '28px' }}>add</span>
             </button>
           </>
-        ) : (
+        ) : currentView === 'competitors' ? (
           <CompetitiveAnalysis onViewChange={() => setCurrentView('app')} />
+        ) : (
+          <MentalGpaRescue onViewChange={() => setCurrentView('app')} onApplyTask={handleApplyGpaTask} />
         )}
       </main>
 
