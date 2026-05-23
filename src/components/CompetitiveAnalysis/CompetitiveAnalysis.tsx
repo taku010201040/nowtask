@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CompetitiveAnalysis.css';
 
 interface Competitor {
@@ -153,9 +153,102 @@ const COMPETITORS: Competitor[] = [
   }
 ];
 
+const SLIDE_NOTES = [
+  {
+    num: 1,
+    badge: 'タイトル',
+    title: '開いた瞬間に"今"がわかる — 24時間スケジューラー 「CHRONOS」',
+    visual: '金色のネオンのようにCHRONOSのロゴが妖しく脈打ち、背後で24時間時計の盤面がアンビエントにゆっくり回転します。',
+    script: '「皆さん、こんにちは。私たちは『情報過多の時代に、瞬時に今やるべきことに没頭できる』時間可視化アプリ、Circadian（CHRONOS）を開発しました。まずは、私たちのアプリの哲学を説明します。」'
+  },
+  {
+    num: 2,
+    badge: '現代の課題 (混沌)',
+    title: 'タスク管理アプリを開いて、逆に疲れていませんか？',
+    visual: '散らかったタスクリストの上に、赤色の未読通知バッジ（99+, 50, 124）が次々とボヨンと弾みながら出現し、視覚的な重圧（ストレス）を表します。',
+    script: '「現代のタスク管理アプリを開いた時、皆さんどう感じますか？ ズラリと並ぶ未完了タスク、真っ赤な通知バッジ…。予定を管理しているはずが、予定を見るだけで圧倒され、かえって疲弊してしまいます。」'
+  },
+  {
+    num: 3,
+    badge: '課題の本質 (注意残余)',
+    title: '集中力を奪う最大の敵「注意残余 (Attention Residue)」',
+    visual: 'カレンダーの背景が深くボカされ、中央に「注意残余」の警告文字がネオン発光で鋭く浮かび上がります。',
+    script: '「これには心理学的な名前があります。『注意残余（Attention Residue）』です。未完了のタスクが頭の片隅に居座り続けることで、今やるべき作業に使えるはずの脳の認知資源が、知らず知らずのうちに奪われてしまう現象です。」'
+  },
+  {
+    num: 4,
+    badge: 'ペルソナ & 受容',
+    title: 'やることが多すぎて余裕がない、それでいい。',
+    visual: '左側の3つのバッテリーが上から順にエネルギー充填されていきます。最後に右側に『それでいい。』という大きな温かい金色の文字が出現します。',
+    script: '「やることが多すぎて余裕がない日、メンタルが崩れて動けない日、そもそもキャパが小さい日…。私たちは『それでもいい。』と全力で肯定したい。大切なのは、自分を責めることではなく、今の自分のキャパシティを受け入れることです。」'
+  },
+  {
+    num: 5,
+    badge: '解決アプローチ',
+    title: '情報を整理するのではなく、不要なノイズを「隠す（引き算）」',
+    visual: '左側の混沌とした予定が中央の矢印を通り、右側の『トットへお供えで貰う』というたった1件の美しいチェックカードへ劇的に収束します。',
+    script: '「そこで私たちは、情報を分類して整理するのではなく、不要なノイズを『隠す（引き算）』というアプローチを取りました。今やるべきこと以外のすべての視覚情報を隠蔽し、今この瞬間だけに集中させます。」'
+  },
+  {
+    num: 6,
+    badge: 'AI診断モデル',
+    title: '心の余裕 × 課題危険度 ＝ 今日やるべきこと最大1件',
+    visual: 'iPhoneモックアップが左に表示され、右側で『心の余裕』×『シラバス危険度』＝『今日やるべき1件』の方程式が滑らかにフェードインします。',
+    script: '「それを支えるのが、今回開発した『単位死守 ＆ メンタル診断AI』です。あなたの今日の心の余裕と、大学のシラバスから計算された課題危険度をAIが掛け合わせ、今日やるべきこと最大1件を厳選します。限界の日は、容赦なく休養をレコメンドします。」'
+  },
+  {
+    num: 7,
+    badge: 'ポジショニングマップ',
+    title: '既存アプリとの決定的なポジショニングの差異',
+    visual: 'グラフの軸が描画され、GoogleカレンダーやTodoistなどの競合が配置された後、右下にCircadianが金色の太陽コロナをまとって劇的に表示されます。',
+    script: '「競合と比較すると一目瞭然です。既存のカレンダーは情報が多くて圧倒され、ToDoリストは時間感覚がありません。Circadianは『時間認知』と『行動支援』を完全に融合し、極限まで情報量を絞り込んだ唯一無二のポジションに位置します。」'
+  },
+  {
+    num: 8,
+    badge: 'デモ実演',
+    title: '【LIVE DEMO】 実際に動作するアプリ画面の実演',
+    visual: '黒い背景に巨大な銀色のネオン文字で『LIVE DEMO』がゆっくりと鼓動するように脈打ちます。実機の画面へ注目を集めます。',
+    script: '「それでは、実際にその操作性と、心の余裕ボタンによってタスクの優先順位がパッと切り替わる様子をデモでご覧ください。」'
+  },
+  {
+    num: 9,
+    badge: 'プロダクトの哲学',
+    title: 'スケジュールを管理するのではなく、私たちの「今」を取り戻す',
+    visual: '明朝体の上品なフォントで『頑張れない日があっていい。』が表示され、最後に金色の力強い輝きとともに結びの哲学メッセージが出現します。',
+    script: '「頑張れない日があっていい。全部できなくていい。私たちは、時間をきっちり予定で埋めるためのツールを作りたかったのではありません。スケジュールに支配される毎日から、私たちの『今』という時間を取り戻すためにCircadianを作りました。」'
+  },
+  {
+    num: 10,
+    badge: '結び',
+    title: 'ご清聴ありがとうございました！',
+    visual: '最初のCHRONOSのロゴと、デモのQRコードおよびGitHub Pagesのプロダクト公開URLが大きく美しく表示されます。',
+    script: '「情報過多の時代に、自分だけの心地よいリズムを刻みましょう。今すぐ体験できる公開URLも用意しています。ご静聴ありがとうございました！」'
+  }
+];
+
 const CompetitiveAnalysis: React.FC<{ onViewChange: () => void }> = ({ onViewChange }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'direct' | 'indirect' | 'matrix' | 'matchup' | 'slides'>('overview');
   const [selectedCompetitor, setSelectedCompetitor] = useState<Competitor>(COMPETITORS[0]);
+  const [currentSlide, setCurrentSlide] = useState(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Keyboard navigation for slides
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (activeTab !== 'slides') return;
+      if (e.key === 'ArrowRight' || e.key === 'Space') {
+        e.preventDefault();
+        setCurrentSlide((prev) => Math.min(prev + 1, 10));
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setCurrentSlide((prev) => Math.max(prev - 1, 1));
+      } else if (e.key === 'Escape') {
+        setIsFullscreen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTab]);
 
   // For Positioning Map grid lines
   const xGridLines = [25, 50, 75];
@@ -667,222 +760,308 @@ const CompetitiveAnalysis: React.FC<{ onViewChange: () => void }> = ({ onViewCha
           <div className="comp-slides animate-fade-in">
             <div className="comp-slides__header-box">
               <div>
-                <span className="text-headline-md font-bold text-primary">📢 ハッカソン本番用スライド台本 ＆ 演出</span>
+                <span className="text-headline-md font-bold text-primary">📊 登壇用インタラクティブ・プレゼンプレイヤー</span>
                 <p className="text-body-md text-on-surface-variant mt-1">
-                  制限時間3〜5分のハッカソンプレゼンで、審査員の心を掴み満点を勝ち取るための最強のピッチ構成案です。
+                  キーボードの <code>←</code> <code>→</code> キーや <code>Space</code> キーでスライドを操作できます。ハッカソンのピッチに最適なアニメーション演出を搭載。
                 </p>
               </div>
-              <button 
-                className="comp-hub__back-btn" 
-                style={{ background: 'var(--color-secondary-container)', color: 'var(--color-on-secondary-container)' }}
-                onClick={() => {
-                  navigator.clipboard.writeText(JSON.stringify(COMPETITORS, null, 2));
-                  alert('競合分析のローデータ（JSON）をクリップボードにコピーしました！プレゼン作成ツール等への流し込みにご利用ください。');
-                }}
-              >
-                <span className="material-symbols-outlined">content_copy</span>
-                <span>競合データをコピー</span>
-              </button>
+              <div className="comp-slides__controls">
+                <button 
+                  className={`fullscreen-toggle-btn ${isFullscreen ? 'active' : ''}`}
+                  onClick={() => setIsFullscreen(!isFullscreen)}
+                >
+                  <span className="material-symbols-outlined">{isFullscreen ? 'fullscreen_exit' : 'fullscreen'}</span>
+                  <span>{isFullscreen ? '全画面終了' : '全画面表示'}</span>
+                </button>
+              </div>
             </div>
 
-            <div className="comp-slides__deck">
-              <div className="slide-sheet">
-                <div className="slide-sheet__meta">
-                  <span className="slide-sheet__num">スライド 1 / 10</span>
-                  <span className="slide-sheet__title-badge">タイトル</span>
-                </div>
-                <div className="slide-sheet__content">
-                  <h4 className="text-headline-sm font-bold text-primary">開いた瞬間に"今"がわかる — 24時間スケジューラー 「Circadian」</h4>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎨 視覚イメージ</span>
-                    <p className="text-body-md">ダークテーマで浮かび上がる美しい24時間円形時計。中央のシーカーが妖しく光る高クオリティ画面キャプチャを背景に大きく配置。</p>
+            {/* Slide Projector Canvas */}
+            <div className={`slide-projector ${isFullscreen ? 'slide-projector--fullscreen' : ''}`}>
+              <div className="slide-projector__viewport">
+                
+                {/* SLIDE 1: Title CHRONOS */}
+                {currentSlide === 1 && (
+                  <div className="slide-content slide-content--title animate-fade-in">
+                    <div className="slide-title-bg-clock" />
+                    <div className="slide-glass-card">
+                      <h1 className="slide-title-main">CHRONOS</h1>
+                      <p className="slide-title-sub">クロノス：24時間周期の可視化アプリ</p>
+                      <div className="slide-title-footer">
+                        <span>DEVELOPED BY GRYFFINDOR</span>
+                        <span className="slide-title-sep">//</span>
+                        <span>VER 1.0.4</span>
+                        <span className="slide-title-sep">//</span>
+                        <span>MAY 2026</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎤 トーク台本 (熱意を込めて)</span>
-                    <p className="text-body-md font-medium text-on-surface">
-                      「皆さん、こんにちは。私たちは『情報過多の時代に、瞬時に今やるべきことに没頭できる』アプリ、Circadian（サーカディアン）を開発しました。開いた瞬間にすべてが伝わる、私たちの自信作をご覧ください。」
+                )}
+
+                {/* SLIDE 2: Overload and Notifications */}
+                {currentSlide === 2 && (
+                  <div className="slide-content slide-content--overload animate-fade-in">
+                    <div className="overload-list-mock">
+                      <div className="overload-title">My Heavy Tasks Schedule</div>
+                      <div className="overload-list-item"><span>■ 授業のレポート提出</span><span className="urgent-tag">重要</span></div>
+                      <div className="overload-list-item"><span>■ バイトのシフト提出</span></div>
+                      <div className="overload-list-item"><span>■ ゼミの発表準備</span><span className="urgent-tag">やばい</span></div>
+                      <div className="overload-list-item"><span>■ 就活ES締め切り</span></div>
+                      <div className="overload-list-item"><span>■ 英語のオンライン小テスト</span></div>
+                    </div>
+                    {/* Floating chaotic notification badges */}
+                    <div className="badge-pop badge-pop--1">99+</div>
+                    <div className="badge-pop badge-pop--2">50</div>
+                    <div className="badge-pop badge-pop--3">124</div>
+                  </div>
+                )}
+
+                {/* SLIDE 3: Attention Residue */}
+                {currentSlide === 3 && (
+                  <div className="slide-content slide-content--attention animate-fade-in">
+                    <div className="attention-card">
+                      <h2 className="attention-glow-title">注意残余<br /><span className="sub-en">(Attention Residue)</span></h2>
+                      <p className="attention-glow-text mt-4">
+                        タスク管理アプリを開いて、余計に疲れていませんか？<br />
+                        未完了のタスクが頭の片隅に居座り、<br />
+                        今やるべきことに集中できない現象。
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* SLIDE 4: Battery Capacity */}
+                {currentSlide === 4 && (
+                  <div className="slide-content slide-content--battery animate-fade-in">
+                    <div className="battery-deck">
+                      <div className="battery-row fill-100">
+                        <div className="battery-case">
+                          <div className="battery-liquid" />
+                          <span className="battery-num">100%</span>
+                        </div>
+                        <span className="battery-desc">やることが多すぎて余裕がない</span>
+                      </div>
+                      
+                      <div className="battery-row fill-50 mt-4">
+                        <div className="battery-case">
+                          <div className="battery-liquid" />
+                          <span className="battery-num">50%</span>
+                        </div>
+                        <span className="battery-desc">精神的な疾患で動けない日がある</span>
+                      </div>
+
+                      <div className="battery-row fill-10 mt-4">
+                        <div className="battery-case">
+                          <div className="battery-liquid" />
+                          <span className="battery-num">10%</span>
+                        </div>
+                        <span className="battery-desc">そもそもキャパが小さい</span>
+                      </div>
+                    </div>
+
+                    <div className="battery-verdict animate-verdict-glow">
+                      <div className="verdict-word">それでいい。</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SLIDE 5: Subtraction */}
+                {currentSlide === 5 && (
+                  <div className="slide-content slide-content--subtraction animate-fade-in">
+                    <div className="sub-flow">
+                      <div className="sub-card-left">
+                        <span className="sub-tag sub-tag--gray">整理する前の状態 (情報過多)</span>
+                        <div className="mock-list-overload mt-2">
+                          <div className="mock-item-blurred" />
+                          <div className="mock-item-blurred" />
+                          <div className="mock-item-blurred" />
+                          <div className="mock-item-blurred" />
+                        </div>
+                      </div>
+
+                      <div className="sub-arrow-box">
+                        <div className="sub-arrow-icon">➔</div>
+                        <span className="sub-arrow-label">隠す (引き算)</span>
+                      </div>
+
+                      <div className="sub-card-right">
+                        <span className="sub-tag sub-tag--green">今やるべきノイズレスな状態</span>
+                        <div className="clean-checkbox-card mt-2">
+                          <span className="clean-chk">✓</span>
+                          <span className="clean-task-txt">トットへお供えで貰う</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="sub-philosophy text-center mt-4">
+                      情報を整理するのではなく、不要なノイズを隠す。
                     </p>
                   </div>
-                </div>
+                )}
+
+                {/* SLIDE 6: Dynamic Formula */}
+                {currentSlide === 6 && (
+                  <div className="slide-content slide-content--formula animate-fade-in">
+                    <div className="formula-wrapper">
+                      <div className="formula-left-iphone">
+                        <div className="iphone-body">
+                          <div className="iphone-screen-mock">
+                            <div className="iphone-status">5月23日 (土) 16:50</div>
+                            <div className="iphone-circle-dial">
+                              <div className="dial-glow-arc" />
+                              <div className="dial-seeker" />
+                            </div>
+                            <div className="iphone-footer-task">ハッカソン開発</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="formula-right-math">
+                        <div className="math-row">
+                          <div className="math-block block-battery">
+                            <span>🔋 今日の心の余裕 (😊/😐/😫)</span>
+                          </div>
+                          <span className="math-op">×</span>
+                          <div className="math-block block-syllabus">
+                            <span>⚠️ シラバスの締切・単位危機度</span>
+                          </div>
+                        </div>
+                        <div className="math-equals">＝</div>
+                        <div className="math-result">
+                          <span>【 🎯 今日やるべき1件 】</span>
+                        </div>
+                        <p className="math-desc mt-3">
+                          しんどい日は「今日は休んでOK」。締め切りが迫っていれば「これだけはやろう」。心の余裕と締め切りを掛け合わせ、AIが自動で抽出。
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SLIDE 7: 2D Position Map */}
+                {currentSlide === 7 && (
+                  <div className="slide-content slide-content--positioning animate-fade-in">
+                    <div className="map-view-box">
+                      <div className="map-view-title">🎯 ポジショニングマップ</div>
+                      <div className="map-canvas">
+                        {/* Axes */}
+                        <div className="map-axis map-axis--y">情報量 (多 ➔ 少)</div>
+                        <div className="map-axis map-axis--x">全体俯瞰 ➔ 今への集中</div>
+                        
+                        {/* Nodes */}
+                        <div className="map-node node-gray gc">Google Calendar</div>
+                        <div className="map-node node-gray td">Todoist</div>
+                        <div className="map-node node-gray tt">TickTick</div>
+                        <div className="map-node node-gray kr">Kurun</div>
+                        <div className="map-node node-gray yp">一日予定表</div>
+                        
+                        {/* Circadian solar eclipse glow */}
+                        <div className="map-node node-circadian-eclipse">
+                          <div className="eclipse-glowing-ring" />
+                          <span className="circadian-text">Circadian</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SLIDE 8: LIVE DEMO */}
+                {currentSlide === 8 && (
+                  <div className="slide-content slide-content--livedemo animate-fade-in">
+                    <h1 className="live-demo-glow-text">LIVE DEMO</h1>
+                  </div>
+                )}
+
+                {/* SLIDE 9: Closing */}
+                {currentSlide === 9 && (
+                  <div className="slide-content slide-content--closing animate-fade-in">
+                    <h2 className="closing-headline">
+                      頑張れない日があっていい。<br />
+                      全部できなくていい。
+                    </h2>
+                    <h3 className="closing-sub-glow mt-4">
+                      スケジュールを管理するのではなく、<br />
+                      私たちの「今」を取り戻す。
+                    </h3>
+                  </div>
+                )}
+
+                {/* SLIDE 10: Final Logo */}
+                {currentSlide === 10 && (
+                  <div className="slide-content slide-content--title slide-content--final animate-fade-in">
+                    <div className="slide-title-bg-clock" />
+                    <div className="slide-glass-card">
+                      <h1 className="slide-title-main">CHRONOS</h1>
+                      <p className="slide-title-sub">ご清聴ありがとうございました！</p>
+                      <div className="slide-final-qr mt-4">
+                        <div className="mock-qr-draw">
+                          <span className="material-symbols-outlined" style={{ fontSize: '48px', color: '#ffffff' }}>qr_code_2</span>
+                        </div>
+                        <p className="text-label-sm text-primary mt-2">https://taku010201040.github.io/nowtask/</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Left/Right Click Overlays to navigate on touch/click */}
+                <div className="slide-clicker slide-clicker--left" onClick={() => setCurrentSlide((prev) => Math.max(prev - 1, 1))} title="前へ" />
+                <div className="slide-clicker slide-clicker--right" onClick={() => setCurrentSlide((prev) => Math.min(prev + 1, 10))} title="次へ" />
               </div>
 
-              <div className="slide-sheet mt-4">
-                <div className="slide-sheet__meta">
-                  <span className="slide-sheet__num">スライド 2 / 10</span>
-                  <span className="slide-sheet__title-badge">課題提起</span>
-                </div>
-                <div className="slide-sheet__content">
-                  <h4 className="text-headline-sm font-bold text-primary">なぜ私たちは、やるべきことを先延ばしにしてしまうのか？</h4>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎨 視覚イメージ</span>
-                    <p className="text-body-md">「73%の大学生が課題を先延ばしにしている」という統計グラフ。従来の複雑なカレンダーに予定がぎっしり詰まって圧倒されているイメージ図。</p>
-                  </div>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎤 トーク台本 (問いかけるように)</span>
-                    <p className="text-body-md font-medium text-on-surface">
-                      「私たちは3つのアプローチからこの問題の本質を突き止めました。第1に『認知負荷』。既存のアプリは今日の全予定を画面に並べるため、それを見た瞬間に圧倒されて脳が拒絶してしまいます。第2に『時間認知』。リスト形式の予定表では、今日の残り時間の感覚が掴めません。第3に『操作コスト』。入力が面倒なスケジュール帳は、挫折の原因になります。」
-                    </p>
-                  </div>
-                </div>
-              </div>
+              {/* Slider Bottom Bar control */}
+              <div className="slide-projector__bar">
+                <button 
+                  className="slide-bar-btn"
+                  onClick={() => setCurrentSlide((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentSlide === 1}
+                >
+                  <span className="material-symbols-outlined">navigate_before</span>
+                  <span>PREV</span>
+                </button>
 
-              <div className="slide-sheet mt-4">
-                <div className="slide-sheet__meta">
-                  <span className="slide-sheet__num">スライド 3 / 10</span>
-                  <span className="slide-sheet__title-badge">ターゲット & ペルソナ</span>
+                <div className="slide-dots">
+                  {Array.from({ length: 10 }).map((_, idx) => (
+                    <button
+                      key={idx}
+                      className={`slide-dot ${currentSlide === idx + 1 ? 'slide-dot--active' : ''}`}
+                      onClick={() => setCurrentSlide(idx + 1)}
+                      aria-label={`スライド ${idx + 1} へ`}
+                    />
+                  ))}
                 </div>
-                <div className="slide-sheet__content">
-                  <h4 className="text-headline-sm font-bold text-primary">「予定はカレンダーに入れるけれど、結局見ない」大学生</h4>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎨 視覚イメージ</span>
-                    <p className="text-body-md">ペルソナ：大学3年生・ハッカソン参加者。サークル、就活、バイト、大学の課題が同時進行し、やることが分かっているのに何から手をつければいいか迷っている様子。</p>
-                  </div>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎤 トーク台本 (当事者意識を出して)</span>
-                    <p className="text-body-md font-medium text-on-surface">
-                      「ターゲットは、私たち自身です。意識が高くてカレンダーに予定は書き留めるものの、情報量が多くてアプリを開くこと自体がストレスになってしまった人。私たちが本当に使いたい、無駄を削ぎ落としたツールが必要です。」
-                    </p>
-                  </div>
-                </div>
-              </div>
 
-              <div className="slide-sheet mt-4">
-                <div className="slide-sheet__meta">
-                  <span className="slide-sheet__num">スライド 4 / 10</span>
-                  <span className="slide-sheet__title-badge">解決策 & コア価値</span>
-                </div>
-                <div className="slide-sheet__content">
-                  <h4 className="text-headline-sm font-bold text-primary">情報を極限まで『削る』アプローチ：「今、これだけをやれ」</h4>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎨 視覚イメージ</span>
-                    <p className="text-body-md">「一般的なカレンダー ＝ すべてを管理（複雑）」と「Circadian ＝ 今だけに集中（シンプル）」の対比図。</p>
-                  </div>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎤 トーク台本 (力強く)</span>
-                    <p className="text-body-md font-medium text-on-surface">
-                      「私たちが提案するのは、予定を増やすことではなく、『減らす』ことです。Circadianを起動すると、0.5秒で自動的に『今進行中のタスク』または『次に行うべき最優先タスク』が画面に大きく1件だけ浮かび上がります。迷う時間をゼロにします。」
-                    </p>
-                  </div>
-                </div>
+                <button 
+                  className="slide-bar-btn"
+                  onClick={() => setCurrentSlide((prev) => Math.min(prev + 1, 10))}
+                  disabled={currentSlide === 10}
+                >
+                  <span>NEXT</span>
+                  <span className="material-symbols-outlined">navigate_next</span>
+                </button>
               </div>
+            </div>
 
-              <div className="slide-sheet mt-4">
-                <div className="slide-sheet__meta">
-                  <span className="slide-sheet__num">スライド 5 / 10</span>
-                  <span className="slide-sheet__title-badge">競合分析</span>
-                </div>
-                <div className="slide-sheet__content">
-                  <h4 className="text-headline-sm font-bold text-primary">既存カレンダー・ToDoリストとのポジショニングの違い</h4>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎨 視覚イメージ</span>
-                    <p className="text-body-md">本ダッシュボードの「総合ポジショニングマップ」と同様の、4象限ポジショニング図。Circadianが右下の独自の領域にいることを明確に示す。</p>
-                  </div>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎤 トーク台本 (論理的に論破)</span>
-                    <p className="text-body-md font-medium text-on-surface">
-                      「私たちは徹底的な競合分析を行いました。Sectographなどの円形時計は単なるカレンダーの投影にすぎず、タスクの登録や完了管理ができません。また、Todoistなどのタスクリストは時間の直感性がなく、先延ばしを招きます。Circadianは『円形アナログ時計の残り時間感覚』と『動的なタスク完了チェック』を統合した唯一無二の存在です。」
-                    </p>
-                  </div>
-                </div>
+            {/* PRESENTATION SPEAKER NOTES / TELEPROMPTER */}
+            <div className="speaker-notes mt-4 animate-slide-up">
+              <div className="speaker-notes__header">
+                <span className="material-symbols-outlined text-secondary">record_voice_over</span>
+                <span className="text-label-lg font-bold text-secondary">
+                  登壇発表用 カンペ・トークスクリプト (スライド {currentSlide} / 10)
+                </span>
               </div>
+              
+              <div className="speaker-notes__body mt-2">
+                <div className="notes-section">
+                  <span className="notes-tag notes-tag--visual">🎨 視覚イメージ ➔</span>
+                  <p className="text-body-md text-on-surface">
+                    {SLIDE_NOTES[currentSlide - 1].visual}
+                  </p>
+                </div>
 
-              <div className="slide-sheet mt-4">
-                <div className="slide-sheet__meta">
-                  <span className="slide-sheet__num">スライド 6 / 10</span>
-                  <span className="slide-sheet__title-badge">デモ実演</span>
-                </div>
-                <div className="slide-sheet__content">
-                  <h4 className="text-headline-sm font-bold text-primary">【ライブデモ】 完璧な時間ブロックと0摩擦のタスク完了</h4>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎨 視覚イメージ</span>
-                    <p className="text-body-md">実機、またはデモ画面のスクリーントランジション。タスクを追加した瞬間にタイムアークが美しく描画され、チェックで消える様子。</p>
-                  </div>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎤 トーク台本 (デモを実演しながら)</span>
-                    <p className="text-body-md font-medium text-on-surface">
-                      「それではデモをご覧ください。ご覧の通り、24時間時計の周りに本日のタスクが色鮮やかな扇形（アーク）で表示されています。現在の時刻を指す針がゆっくりと進み、中央には『今やること』が大きく映し出されています。ここでFABをタップし、『就活エントリーシート』を追加します。ご覧ください、アークがリアルタイムで挿入されました！タスクが完了したらチェック。トーストとともに次のタスクに自動で切り替わります。」
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="slide-sheet mt-4">
-                <div className="slide-sheet__meta">
-                  <span className="slide-sheet__num">スライド 7 / 10</span>
-                  <span className="slide-sheet__title-badge">独自性の秘密</span>
-                </div>
-                <div className="slide-sheet__content">
-                  <h4 className="text-headline-sm font-bold text-primary">当事者だからこその「目に優しく、心に余裕を与える」デザイン</h4>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎨 視覚イメージ</span>
-                    <p className="text-body-md">こだわりポイントのクローズアップ（夜間に目に痛くない美しいダークマテリアルカラー、残り時間が視覚的に減っていくアークのフェード効果など）。</p>
-                  </div>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎤 トーク台本 (共感を呼ぶ)</span>
-                    <p className="text-body-md font-medium text-on-surface">
-                      「なぜこのダークな配色なのか？ 深夜に部屋を暗くして課題をやる学生にとって、明るい画面は目に毒だからです。なぜタスク完了のトーストがこんなに気持ち良いのか？ 達成感のないタスク管理は続かないからです。すべて私たちのリアルな体験とこだわりから決定されました。」
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="slide-sheet mt-4">
-                <div className="slide-sheet__meta">
-                  <span className="slide-sheet__num">スライド 8 / 10</span>
-                  <span className="slide-sheet__title-badge">技術構成</span>
-                </div>
-                <div className="slide-sheet__content">
-                  <h4 className="text-headline-sm font-bold text-primary">Vite + React ＆ リアルタイムSVGアークレンダリング</h4>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎨 視覚イメージ</span>
-                    <p className="text-body-md">技術構成スタック図（Vite, React, TypeScript, LocalStorage, Vanilla CSS, SVG Drawing engine, GitHub Pages Deploy）。</p>
-                  </div>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎤 トーク台本 (技術的裏付け)</span>
-                    <p className="text-body-md font-medium text-on-surface">
-                      「私たちはハッカソン中に実際に動作する画面を完成させるため、ビルドが高速なVite＋Reactを採用しました。特に時計のアーク描画はライブラリに頼らず、ネイティブSVGの数式描画でリアルタイムに処理しており、極めて軽量かつレスポンシブです。データは安全にLocalStorageに永続化されます。」
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="slide-sheet mt-4">
-                <div className="slide-sheet__meta">
-                  <span className="slide-sheet__num">スライド 9 / 10</span>
-                  <span className="slide-sheet__title-badge">今後の拡張ロードマップ</span>
-                </div>
-                <div className="slide-sheet__content">
-                  <h4 className="text-headline-sm font-bold text-primary">Notion同期、画像予定抽出、そして音声による対話的タスク入力へ</h4>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎨 視覚イメージ</span>
-                    <p className="text-body-md">今後の機能のアイコン並び（Notion MCP、音声入力・Speech-to-Text、AI Visionによるチラシ画像からの自動カレンダー抽出）。</p>
-                  </div>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎤 トーク台本 (ワクワク感の提示)</span>
-                    <p className="text-body-md font-medium text-on-surface">
-                      「Circadianはここで終わりません。今後はNotionとの自動双方向同期をサポートし、さらにLLMを用いた音声入力による対話的タスク登録や、授業のシラバス写真から一括で予定を取り込むAI Vision機能を実装し、さらに入力コストを削減します。」
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="slide-sheet mt-4">
-                <div className="slide-sheet__meta">
-                  <span className="slide-sheet__num">スライド 10 / 10</span>
-                  <span className="slide-sheet__title-badge">結び</span>
-                </div>
-                <div className="slide-sheet__content">
-                  <h4 className="text-headline-sm font-bold text-primary">「『今』に集中できれば、あなたの1日は確実に変わる。」</h4>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎨 視覚イメージ</span>
-                    <p className="text-body-md">大きなキャッチフレーズと、GitHub Pagesで今すぐ体験できるデモQRコードの表示。</p>
-                  </div>
-                  <div className="slide-sheet__section mt-2">
-                    <span className="text-label-sm text-on-surface-variant font-bold">🎤 トーク台本 (余韻を残す)</span>
-                    <p className="text-body-md font-medium text-on-surface">
-                      「情報過多に追われる日々を終わらせ、自分だけの体内時計を取り戻しましょう。今この瞬間から、Circadianがあなたの集中を支えます。ご静聴ありがとうございました！」
-                    </p>
-                  </div>
+                <div className="notes-section mt-3">
+                  <span className="notes-tag notes-tag--script">🎤 トーク台本 (熱意を込めて) ➔</span>
+                  <p className="text-body-lg text-primary font-bold italic" style={{ lineHeight: '1.6', color: 'var(--color-primary)' }}>
+                    "{SLIDE_NOTES[currentSlide - 1].script}"
+                  </p>
                 </div>
               </div>
             </div>
