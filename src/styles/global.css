@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+/* ====================================
+   Design Tokens (Circadian System)
+   ==================================== */
+:root {
+  /* Colors */
+  --color-background: #12131d;
+  --color-surface: #12131d;
+  --color-surface-container-lowest: #0c0d18;
+  --color-surface-container-low: #1a1b26;
+  --color-surface-container: #1e1f2a;
+  --color-surface-container-high: #282935;
+  --color-surface-container-highest: #333440;
+  --color-surface-variant: #333440;
+  --color-surface-bright: #383844;
+  --color-surface-dim: #12131d;
+
+  --color-primary: #ffd7a9;
+  --color-primary-container: #ffb347;
+  --color-primary-fixed: #ffddb6;
+  --color-primary-fixed-dim: #ffb95a;
+  --color-on-primary: #462a00;
+  --color-on-primary-container: #704700;
+  --color-inverse-primary: #845400;
+
+  --color-secondary: #a4c9ff;
+  --color-secondary-container: #0164b4;
+  --color-on-secondary: #00315d;
+  --color-on-secondary-container: #d0e1ff;
+
+  --color-tertiary: #ffd5cb;
+  --color-tertiary-container: #ffae9b;
+  --color-on-tertiary: #621000;
+
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+
+  --color-on-background: #e2e1f1;
+  --color-on-surface: #e2e1f1;
+  --color-on-surface-variant: #d6c3b0;
+  --color-outline: #9f8e7c;
+  --color-outline-variant: #524535;
+  --color-inverse-surface: #e2e1f1;
+  --color-inverse-on-surface: #2f303b;
+  --color-surface-tint: #ffb95a;
+
+  /* Task colors */
+  --color-red: #EF4444;
+  --color-orange: #F97316;
+  --color-yellow: #EAB308;
+  --color-green: #22C55E;
+  --color-blue: #3B82F6;
+  --color-purple: #A855F7;
+  --color-gray: #9CA3AF;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  --margin-mobile: 24px;
+  --margin-desktop: 64px;
+
+  /* Typography */
+  --font-family: 'Inter', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease-in-out;
+  --transition-slow: 300ms ease-in-out;
+
+  /* Shadows */
+  --shadow-glow-primary: 0 0 20px rgba(255, 185, 90, 0.3);
+  --shadow-glow-sm: 0 0 10px rgba(255, 185, 90, 0.5);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ====================================
+   Reset & Base
+   ==================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  min-height: 100dvh;
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+input, textarea {
+  font-family: inherit;
+}
+
+/* ====================================
+   Typography Utilities
+   ==================================== */
+.text-display {
+  font-size: clamp(56px, 12vw, 80px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.text-headline-lg {
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.text-headline-md {
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.33;
+  letter-spacing: -0.02em;
+}
+
+.text-title-lg {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.text-body-lg {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.text-body-md {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.text-label-lg {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+
+.text-label-sm {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ====================================
+   Material Symbols
+   ==================================== */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  user-select: none;
+}
+
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ====================================
+   Scrollbar
+   ==================================== */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: var(--radius-full);
+}
+
+/* ====================================
+   Selection
+   ==================================== */
+::selection {
+  background: rgba(255, 185, 90, 0.3);
+}

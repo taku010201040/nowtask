@@ -1,0 +1,112 @@
+.app {
+  position: relative;
+  min-height: 100dvh;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient background glow */
+.app__bg-glow {
+  position: fixed;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60vmax;
+  height: 60vmax;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 185, 90, 0.05) 0%,
+    rgba(255, 130, 50, 0.03) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Main layout */
+.app__main {
+  position: relative;
+  z-index: 1;
+  padding-top: 64px; /* TopBar height */
+  padding-bottom: 100px; /* FAB space */
+  max-width: 480px;
+  margin: 0 auto;
+  padding-left: var(--margin-mobile);
+  padding-right: var(--margin-mobile);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+/* Tasks section */
+.app__tasks-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.app__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+}
+
+/* Progress indicator */
+.app__progress {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-xs);
+}
+
+.app__progress-bar {
+  width: 64px;
+  height: 3px;
+  background: var(--color-surface-container-high);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.app__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary-fixed-dim), var(--color-primary));
+  border-radius: var(--radius-full);
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* FAB */
+.app__fab {
+  position: fixed;
+  bottom: var(--spacing-xl);
+  right: var(--margin-mobile);
+  z-index: 50;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 24px rgba(255, 185, 90, 0.4);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.app__fab:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 10px 32px rgba(255, 185, 90, 0.5);
+}
+
+.app__fab:active {
+  transform: scale(0.95);
+}
+
+/* Desktop layout adjustment */
+@media (min-width: 768px) {
+  .app__main {
+    padding-left: var(--margin-desktop);
+    padding-right: var(--margin-desktop);
+    max-width: 640px;
+  }
+}

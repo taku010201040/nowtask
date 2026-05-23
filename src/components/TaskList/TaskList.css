@@ -1,0 +1,225 @@
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.task-list--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-3xl) 0;
+}
+
+/* Task Card */
+.task-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  background: rgba(30, 31, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.task-card:hover {
+  background: rgba(40, 41, 53, 0.7);
+}
+
+.task-card--active {
+  background: rgba(30, 31, 42, 0.8);
+  border-color: rgba(255, 185, 90, 0.15);
+}
+
+.task-card--done {
+  opacity: 0.5;
+}
+
+/* Left bar */
+.task-card__bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--task-color, var(--color-gray));
+  opacity: 0.7;
+}
+
+.task-card--active .task-card__bar {
+  opacity: 1;
+  box-shadow: 0 0 8px var(--task-color);
+}
+
+/* Glow */
+.task-card__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at left center, rgba(255, 185, 90, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Check button */
+.task-card__check {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+  margin-left: var(--spacing-sm);
+}
+
+.task-card__check:hover {
+  transform: scale(1.15);
+}
+
+.task-card__check--done {
+  border-color: transparent;
+}
+
+/* Content */
+.task-card__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: flex-start;
+}
+
+.task-card__times {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  min-width: 44px;
+  gap: 2px;
+}
+
+.task-card__body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.task-card__name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-on-surface);
+  transition: opacity var(--transition-fast);
+}
+
+.task-card--done .task-card__name {
+  text-decoration: line-through;
+}
+
+.task-card__meta {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.task-card__tag {
+  display: inline-block;
+  padding: 2px var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.task-card__priority {
+  display: inline-block;
+  padding: 2px var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--color-error);
+  background: rgba(255, 180, 171, 0.08);
+}
+
+/* Menu button */
+.task-card__menu-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.task-card__menu-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-surface-variant);
+  opacity: 0.4;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+}
+
+.task-card:hover .task-card__menu-btn {
+  opacity: 1;
+}
+
+.task-card__menu-btn:hover {
+  background: var(--color-surface-variant);
+}
+
+/* Dropdown */
+.task-card__dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 50;
+  min-width: 160px;
+  background: var(--color-surface-container-high);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.15s ease;
+}
+
+.task-card__dropdown-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+}
+
+.task-card__dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--color-on-surface);
+  font-size: 14px;
+  transition: background var(--transition-fast);
+  text-align: left;
+}
+
+.task-card__dropdown-item:hover {
+  background: var(--color-surface-variant);
+}
+
+.task-card__dropdown-item--danger {
+  color: var(--color-error);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
